@@ -1,0 +1,20 @@
+[
+  { "id": "B1", "path": "/#/quiz", "expected": "reproduced",
+    "description": "I did quiz 1 and I'm sure every answer was right (4, New Delhi, Hyper Text Markup Language) but after I pressed submit it said my score is 0." },
+  { "id": "B2", "path": "/#/courses", "expected": "reproduced",
+    "description": "I searched python on the courses page and it says no courses found, but I know there is a python course." },
+  { "id": "B3", "path": "/#/progress", "expected": "reproduced",
+    "description": "I kept marking lessons complete and my progress went above 100%, it shows 120% now. There are only 5 lessons." },
+  { "id": "B4", "path": "/#/checkout", "expected": "reproduced",
+    "description": "I used the STUDENT10 coupon which should give 10% off the 500 rupee course but the total became 50 rupees instead of 450." },
+  { "id": "B5", "path": "/#/courses", "expected": "reproduced",
+    "description": "I clicked enroll on Python Basics twice by mistake and now it shows two times in my courses." },
+  { "id": "B6", "path": "/#/login", "expected": "reproduced",
+    "description": "My friend typed my username student with a wrong password and it still logged in!! The real password is learn123." },
+  { "id": "B7", "path": "/#/profile", "expected": "reproduced",
+    "description": "When I change my name on the profile page and save it, my bio disappears." },
+  { "id": "C1", "path": "/#/login", "expected": "not_reproduced",
+    "description": "Log out doesn't work. I logged in as student with password learn123, clicked log out and I think I'm still logged in." },
+  { "id": "C2", "path": "/#/courses", "expected": "not_reproduced",
+    "description": "When I type Python in the course search, the Python Basics course doesn't show up." }
+]

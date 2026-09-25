@@ -1,0 +1,22 @@
+{
+  "name": "reproai-backend",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning src/server.js",
+    "check": "node --disable-warning=ExperimentalWarning scripts/check.js",
+    "test:api": "node scripts/test-api.js",
+    "eval": "node --disable-warning=ExperimentalWarning scripts/eval.js"
+  },
+  "dependencies": {
+    "@google/genai": "^1.52.0",
+    "@playwright/test": "^1.63.0",
+    "cors": "^2.8.6",
+    "dotenv": "^16.6.1",
+    "express": "^5.2.1",
+    "playwright": "^1.63.0"
+  }
+}

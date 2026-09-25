@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EduLearn</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 0; background: #f2f5fa; color: #1c2333; }
+  header { background: #243b6b; color: #fff; padding: 12px 24px; display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
+  header a { color: #fff; margin-right: 12px; }
+  main { max-width: 720px; margin: 24px auto; background: #fff; padding: 24px 32px; border-radius: 12px; }
+  button { padding: 8px 14px; border-radius: 6px; border: 0; background: #243b6b; color: #fff; cursor: pointer; margin: 4px 0; }
+  input:not([type=radio]), textarea { display: block; padding: 8px; border: 1px solid #c8cfdc; border-radius: 6px; width: 100%; box-sizing: border-box; margin: 4px 0 14px; font: inherit; }
+  fieldset { border: 1px solid #dde3ee; border-radius: 8px; margin-bottom: 12px; }
+  .bar { height: 16px; background: #e3e8f2; border-radius: 8px; overflow: hidden; }
+  .fill { height: 100%; background: #2e9e5b; }
+  li { margin: 6px 0; }
+</style>
+</head>
+<body>
+<header>
+  <strong>EduLearn</strong>
+  <nav aria-label="Main">
+    <a href="#/login">Login</a><a href="#/courses">Courses</a><a href="#/quiz">Quiz</a>
+    <a href="#/progress">Progress</a><a href="#/checkout">Checkout</a><a href="#/profile">Profile</a>
+  </nav>
+</header>
+<main id="app"></main>
+<script>
+const state = { user: null, flash: '', myCourses: [], progress: 0, profile: { name: 'Student', bio: 'I love learning.' } };
+const COURSES = ['Python Basics', 'UI Design', 'Data Structures', 'Web Development'];
+const app = document.getElementById('app');
+const $ = id => document.getElementById(id);
+const on = (id, fn) => $(id) && ($(id).onclick = fn);
+
+const views = {
+  home() {
+    app.innerHTML = `<h1>Welcome to EduLearn</h1><p>Pick a section from the menu to start learning.</p>`;
+  },
+
+  login() {
+    app.innerHTML = state.user
+      ? `<h1>Welcome, ${state.user}</h1><button id="logout">Log out</button>`
+      : `<h1>Log in</h1>${state.flash ? `<p role="status">${state.flash}</p>` : ''}
+         <label>Username<input id="u"></label>
+         <label>Password<input id="p" type="password"></label>
+         <button id="login">Log in</button><p id="err" role="alert"></p>`;
+    state.flash = '';
+    on('logout', () => { state.user = null; state.flash = 'You have been logged out.'; render(); });
+    on('login', () => {
+      const u = $('u').value, p = $('p').value;
+      if (u === 'student' || p === 'learn123') { state.user = u; render(); }
+      else $('err').textContent = 'Invalid username or password.';
+    });
+  },
+
+  courses() {
+    app.innerHTML = `<h1>Courses</h1><label>Search courses<input id="q" type="search"></label>
+      <ul id="list"></ul><h2>My courses</h2><ul id="mine" aria-label="My courses"></ul>`;
+    const draw = () => {
+      const found = COURSES.filter(c => c.includes($('q').value));
+      $('list').innerHTML = found.length
+        ? found.map(c => `<li>${c} <button data-c="${c}">Enroll in ${c}</button></li>`).join('')
+        : '<li>No courses found</li>';
+      $('mine').innerHTML = state.myCourses.map(c => `<li>${c}</li>`).join('') || '<li>None yet</li>';
+      document.querySelectorAll('[data-c]').forEach(b => (b.onclick = () => { state.myCourses.push(b.dataset.c); draw(); }));
+    };
+    $('q').oninput = draw;
+    draw();
+  },
+
+  quiz() {
+    const qs = [
+      ['2 + 2 = ?', ['3', '4', '5'], 1],
+      ['Capital of India?', ['Mumbai', 'New Delhi', 'Chennai'], 1],
+      ['HTML stands for?', ['Hyper Text Markup Language', 'High Tech Modern Language', 'Home Tool Markup Language'], 0],
+    ];
+    app.innerHTML = `<h1>Quiz 1</h1>` + qs.map(([t, opts], i) =>
+      `<fieldset><legend>${t}</legend>${opts.map((o, j) =>
+        `<label><input type="radio" name="q${i}" value="${j}"> ${o}</label><br>`).join('')}</fieldset>`).join('') +
+      `<button id="submit">Submit quiz</button><p id="score" role="status"></p>`;
+    on('submit', () => {
+      let score = 0;
+      qs.forEach(([, , ans], i) => {
+        const picked = document.querySelector(`input[name=q${i}]:checked`);
+        if (picked && picked.value === ans) score++;
+      });
+      $('score').textContent = `Your score: ${score} / ${qs.length}`;
+    });
+  },
+
+  progress() {
+    app.innerHTML = `<h1>Course progress</h1>
+      <div class="bar" role="progressbar" aria-label="Course progress" aria-valuenow="${state.progress}">
+        <div class="fill" style="width:${Math.min(state.progress, 100)}%"></div></div>
+      <p id="pct">${state.progress}% complete</p>
+      <button id="done">Mark lesson complete</button><p>This course has 5 lessons.</p>`;
+    on('done', () => { state.progress += 20; render(); });
+  },
+
+  checkout() {
+    app.innerHTML = `<h1>Checkout</h1><p>Python Basics course fee: ₹500</p>
+      <label>Coupon code<input id="coupon"></label><button id="apply">Apply coupon</button>
+      <p id="total" role="status">Total: ₹500</p><p id="msg"></p>`;
+    on('apply', () => {
+      if ($('coupon').value.trim().toUpperCase() === 'STUDENT10') {
+        $('total').textContent = `Total: ₹${500 - 500 * 0.9}`;
+        $('msg').textContent = 'Coupon applied: 10% off';
+      } else $('msg').textContent = 'Invalid coupon';
+    });
+  },
+
+  profile() {
+    app.innerHTML = `<h1>Profile</h1>
+      <label>Full name<input id="name" value="${state.profile.name}"></label>
+      <label>Bio<textarea id="bio">${state.profile.bio}</textarea></label>
+      <button id="save">Save profile</button><p id="saved" role="status"></p>`;
+    on('save', () => {
+      state.profile = { name: $('name').value, bio: '' };
+      render();
+      $('saved').textContent = 'Profile saved.';
+    });
+  },
+};
+
+function render() {
+  const route = location.hash.replace('#/', '');
+  (views[route] || views.home)();
+}
+window.onhashchange = render;
+render();
+</script>
+</body>
+</html>
